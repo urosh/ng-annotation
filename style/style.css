@@ -1,0 +1,30 @@
+body{
+	
+}
+
+ul li{
+	display: inline;
+	list-style-type: none;
+	padding-right: 20px;
+	border: solid 1px red;
+	background: #efefef;
+}
+
+
+#mainView {
+    border: 1px solid black;
+	clear: both;
+	padding: 0 1em;
+}
+.active {
+    background-color: #FFF;
+    color: #000;
+}
+
+.myApp select{
+	padding: 10px;
+}
+.myApp div{
+	padding: 10px;
+}
+
