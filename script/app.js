@@ -3,217 +3,139 @@ angular.module('myApp', []);
 angular.module('myApp')
 	.directive('myAnnotation', ['$document', function($document){
 		var imgElement = angular.element('<img class="img-mask" src="img/brusli.jpeg">');
+		var spanElements = [];
+
 		var span_tl = angular.element("<span class='handler top-left'></span>");
 		var span_tr = angular.element("<span class='handler top-right'></span>");
 		var span_bl = angular.element("<span class='handler bottom-left'></span>");
 		var span_br = angular.element("<span class='handler bottom-right'></span>");
 		
 		var maskElement = angular.element('<div class="mask-div" ng-click="maskSelected($event)"></div>');
+		
 		var link = function(scope, elm){
 			var startX, startY, initialMouseX, initialMouseY, w, h, initialW, initialH, dx, dy, top, left;	
 			initialW = 180;
 			initialH = 110;	
 			
-
-			imgElement.bind('mousedown', function($event) {
-        startX = maskElement.prop('offsetLeft');
-        startY = maskElement.prop('offsetTop');
-        initialMouseX = $event.clientX;
-        initialMouseY = $event.clientY;
-        $document.bind('mousemove', mousemove);
-        $document.bind('mouseup', mouseup);
-        $document.unbind('mousemove', mousemove_tl);
-        $document.unbind('mouseup', mouseup_tl);
-        return false;
-      });
-
-			span_tl.bind('mousedown', function($event){
+			function mouseDownHandler($event, source){
 				startX = maskElement.prop('offsetLeft');
 				startY = maskElement.prop('offsetTop');
+				
 				initialMouseX = $event.clientX;
         initialMouseY = $event.clientY;
 
-        $document.bind('mousemove', mousemove_tl);
+        if(source!='img'){
+        	$document.unbind('mousemove', mousemove);
+        	$document.unbind('mouseup', mouseup);
+        }
+
+			}
+
+
+			imgElement.bind('mousedown', function($event) {
+       	
+       	mouseDownHandler($event, 'img');
+			
+				$document.bind('mousemove', mousemove);
+        $document.bind('mouseup', mouseup);
+      
+        return false;
+      });
+
+
+			
+			
+			span_tl.bind('mousedown', function($event){
+				
+        mouseDownHandler($event, 'tl');
+				
+        $document.bind('mousemove',mousemove_tl);
         $document.bind('mouseup', mouseup_tl);
-        $document.unbind('mousemove', mousemove);
-        $document.unbind('mouseup', mouseup);
        
 			});
 
 			span_tr.bind('mousedown', function($event){
-				startX = maskElement.prop('offsetLeft');
-				startY = maskElement.prop('offsetTop');
-				initialMouseX = $event.clientX;
-        initialMouseY = $event.clientY;
-
+				mouseDownHandler($event, 'tr');
+				
         $document.bind('mousemove', mousemove_tr);
         $document.bind('mouseup', mouseup_tr);
-        $document.unbind('mousemove', mousemove);
-        $document.unbind('mouseup', mouseup);
        
 			});
 
 			span_bl.bind('mousedown', function($event){
-				startX = maskElement.prop('offsetLeft');
-				startY = maskElement.prop('offsetTop');
-				initialMouseX = $event.clientX;
-        initialMouseY = $event.clientY;
-
+				
+				mouseDownHandler($event, 'bl');
+				
         $document.bind('mousemove', mousemove_bl);
         $document.bind('mouseup', mouseup_bl);
-        $document.unbind('mousemove', mousemove);
-        $document.unbind('mouseup', mouseup);
        
 			});
 
 			span_br.bind('mousedown', function($event){
-				startX = maskElement.prop('offsetLeft');
-				startY = maskElement.prop('offsetTop');
-				initialMouseX = $event.clientX;
-        initialMouseY = $event.clientY;
-
+				
+				mouseDownHandler($event, 'br');
+	
         $document.bind('mousemove', mousemove_br);
         $document.bind('mouseup', mouseup_br);
-        $document.unbind('mousemove', mousemove);
-        $document.unbind('mouseup', mouseup);
        
 			});
 
 
 
+			function mouseMoveHandler($event, coef){
+				dx = $event.clientX - initialMouseX;
+        dy = $event.clientY - initialMouseY;
+        
+        left = startX + coef[0] * dx;
+        top = startY + coef[1] * dy;
+       
+        w = initialW + coef[2] * dx;
+        h = initialH + coef[3] * dy;
 
+        maskElement.css({
+          top:  top + 'px',
+          left: left + 'px',
+          width: w + 'px',
+          height: h + 'px'
+        });
+
+        var clip = 'rect(' + top + 'px, ' + ( left + w ) + 'px, ' +  (top + h) + 'px, ' + left + 'px)';
+        imgElement.css({
+        	top: parseInt(-top) + 'px',
+        	left: parseInt(-left) + 'px',
+        	clip: clip
+        	
+        });
+
+			}
 
 
 
 			function mousemove_tl($event){
-				dx = $event.clientX - initialMouseX;
-        dy = $event.clientY - initialMouseY;
-        left = startX + dx;
-        top = startY + dy;
-       
-        w = initialW - dx;
-        h = initialH - dy;
-       
-        maskElement.css({
-          top:  top + 'px',
-          left: left + 'px',
-          width: w + 'px',
-          height: h + 'px'
-        });
-
-        var clip = 'rect(' + top + 'px, ' + ( left + w ) + 'px, ' +  (top + h) + 'px, ' + left + 'px)';
-        imgElement.css({
-        	top: parseInt(-top) + 'px',
-        	left: parseInt(-left) + 'px',
-        	clip: clip
-        	
-        })
-
+				mouseMoveHandler($event, [1, 1, -1, -1]);
+				return false;
 			};
 
 			function mousemove_tr($event){
-				dx = $event.clientX - initialMouseX;
-        dy = $event.clientY - initialMouseY;
-        left = startX ;
-        top = startY + dy;
-       
-        w = initialW + dx;
-        h = initialH - dy;
-        
-        maskElement.css({
-          top:  top + 'px',
-          left: left + 'px',
-          width: w + 'px',
-          height: h + 'px'
-        });
-
-        var clip = 'rect(' + top + 'px, ' + ( left + w ) + 'px, ' +  (top + h) + 'px, ' + left + 'px)';
-        imgElement.css({
-        	top: parseInt(-top) + 'px',
-        	left: parseInt(-left) + 'px',
-        	clip: clip
-        	
-        });
-     };
+        mouseMoveHandler($event, [0, 1, 1, -1]);
+        return false;
+     	};
 
 
 
 
 			function mousemove_bl($event){
-				dx = $event.clientX - initialMouseX;
-        dy = $event.clientY - initialMouseY;
-
-        left = startX +dx;
-        top = startY ;
-       
-        w = initialW - dx;
-        h = initialH + dy;
-        
-        maskElement.css({
-          top:  top + 'px',
-          left: left + 'px',
-          width: w + 'px',
-          height: h + 'px'
-        });
-
-        var clip = 'rect(' + top + 'px, ' + ( left + w ) + 'px, ' +  (top + h) + 'px, ' + left + 'px)';
-        imgElement.css({
-        	top: parseInt(-top) + 'px',
-        	left: parseInt(-left) + 'px',
-        	clip: clip
-        	
-        });
-     };
+        mouseMoveHandler($event, [1, 0, -1, 1]);
+        return false;
+     	};
 
     	function mousemove_br($event){
-				dx = $event.clientX - initialMouseX;
-        dy = $event.clientY - initialMouseY;
-
-        left = startX;
-        top = startY;
-       
-        w = initialW + dx;
-        h = initialH + dy;
-        
-        maskElement.css({
-          top:  top + 'px',
-          left: left + 'px',
-          width: w + 'px',
-          height: h + 'px'
-        });
-
-        var clip = 'rect(' + top + 'px, ' + ( left + w ) + 'px, ' +  (top + h) + 'px, ' + left + 'px)';
-        
-        imgElement.css({
-        	top: parseInt(-top) + 'px',
-        	left: parseInt(-left) + 'px',
-        	clip: clip
-        	
-        });
-    	};
+				mouseMoveHandler($event, [0, 0, 1, 1]);
+				return false;
+      };
 
     	function mousemove($event) {
-      	dx = $event.clientX - initialMouseX;
-        dy = $event.clientY - initialMouseY;
-        top = startY + dy;
-        left = startX + dx;
-        w = initialW;
-        h = initialH;
-
-        maskElement.css({
-          top:  top + 'px',
-          left: left + 'px',
-          width: w + 'px',
-          height: h + 'px'
-        });
-
-        var clip = 'rect(' + top + 'px, ' + ( left + initialW ) + 'px, ' +  (top + initialH) + 'px, ' + left + 'px)';
-        imgElement.css({
-        	top: parseInt(-top) + 'px',
-        	left: parseInt(-left) + 'px',
-        	clip: clip
-        	
-        })
+      	mouseMoveHandler($event, [1, 1, 0, 0]);
         return false;
       };
 
@@ -230,32 +152,37 @@ angular.module('myApp')
 
 
       
-
-      function mouseup_tl($event){
+      function setSize(){
       	initialW = w;
       	initialH = h;
+      	
+      }
+      
+      function mouseup_tl($event){
+      	setSize();
+
       	$document.unbind('mousemove', mousemove_tl);
         $document.unbind('mouseup', mouseup_tl);
       }
 
       function mouseup_tr($event){
-      	initialW = w;
-      	initialH = h;
+      	setSize();
+      	
       	$document.unbind('mousemove', mousemove_tr);
         $document.unbind('mouseup', mouseup_tr);
       }
 
 
       function mouseup_bl($event){
-      	initialW = w;
-      	initialH = h;
+      	setSize();
+      	
       	$document.unbind('mousemove', mousemove_bl);
         $document.unbind('mouseup', mouseup_bl);
       }
 
       function mouseup_br($event){
-      	initialW = w;
-      	initialH = h;
+      	setSize();
+      	
       	$document.unbind('mousemove', mousemove_br);
         $document.unbind('mouseup', mouseup_br);
       }
