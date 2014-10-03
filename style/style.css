@@ -1,30 +1,72 @@
-body{
+.annotation-container{
+	display: inline-block;
+	position: relative;
+}
+
+
+svg{
+	border: solid 1px red;
+}
+.img-mask{
+	position: absolute;
+	top: -90px;
+	left: -60px;
+	clip: rect(90px, 240px, 200px, 60px);
+	
+	 -moz-user-select: none;
+  -webkit-user-select: none;
+  /* this will work for QtWebKit in future */
+  -webkit-user-drag: none;
+
+	cursor: move; 
+}
+
+.mask-div{
+	position: absolute;
+	top: 90px;
+	left: 60px;
+	width: 180px;
+	height: 110px;
+	outline: dotted 1px grey;
+	
 	
 }
-
-ul li{
-	display: inline;
-	list-style-type: none;
-	padding-right: 20px;
-	border: solid 1px red;
-	background: #efefef;
+.img-original{
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: 0.4;
+	pointer-events: none;
 }
 
-
-#mainView {
-    border: 1px solid black;
-	clear: both;
-	padding: 0 1em;
-}
-.active {
-    background-color: #FFF;
-    color: #000;
+.handler{
+	width: 8px;
+	height: 8px;
+	position: absolute;
+	background-color: black;
+	cursor: pointer;
 }
 
-.myApp select{
-	padding: 10px;
+.handler.top-left{
+	top: -8px;
+	left: -8px;
+
 }
-.myApp div{
-	padding: 10px;
+
+.handler.top-right{
+	top: -8px;
+	right: -8px;
 }
+
+.handler.bottom-left{
+	bottom: -8px;
+	left: -8px;
+
+}
+
+.handler.bottom-right{
+	right: -8px;
+	bottom: -8px;
+}
+
 
