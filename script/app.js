@@ -71,7 +71,9 @@ angular.module('myApp')
        	if( top < 0 )	{ top = 0; }
         
 
-        if(left + initialW + coef[2]*dx < imageW) { w = initialW + coef[2] * dx; }
+        if(left + initialW + coef[2]*dx < imageW) { 
+        	w = initialW + coef[2] * dx; 
+        }
       	if(top + initialH + coef[3]*dy < imageH) { h = initialH + coef[3] * dy;}
 
       	if( (left + w) < imageW && (top + h) < imageH && w > 5 && h >5){
@@ -89,7 +91,7 @@ angular.module('myApp')
 	      		clip: clip
 	      	
 	      	}); 	
-      }
+      	}
 
 
         return false;
