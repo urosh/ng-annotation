@@ -3,8 +3,8 @@ angular.module('myApp', []);
 angular.module('myApp')
 	.directive('myAnnotation', ['$document', function($document){
 		
-		var imgElement = angular.element('<img ng-mousedown="mouseDownHandler($event, \'img\')" class="img-mask" src="img/brusli.jpeg">');
-		
+		var imgElement = angular.element('<img ng-mousedown="mouseDownHandler($event, \'img\')" class="img-mask" ng-src="img/brusli.jpeg">');
+
 		var spanElements = [];
 
 		var span_tl = angular.element("<span ng-mousedown='mouseDownHandler($event, \"tl\")' class='handler top-left'></span>");
@@ -19,10 +19,14 @@ angular.module('myApp')
 		var link = function(scope, elm){
 			var startX, startY, initialMouseX, initialMouseY, 
 				w, h, initialW, initialH, dx, 
-				dy, top, left, source;	
+				dy, top, left, source,
+				imageW, imageH;	
 			
 			initialW = 180;
 			initialH = 110;	
+			
+			imageW = 480;
+			imageH = 645;
 			
 			scope.mouseDownHandler = function($event, _source_){
 				startX = maskElement.prop('offsetLeft');
@@ -65,25 +69,27 @@ angular.module('myApp')
         top = startY + coef[1] * dy;
        	if( left < 0 ) { left = 0; }
        	if( top < 0 )	{ top = 0; }
-        w = initialW + coef[2] * dx;
-        h = initialH + coef[3] * dy;
-
-        if ( (left + w) > 400 ) { w = 400 - left;}
         
-        maskElement.css({
-          top:  top + 'px',
-          left: left + 'px',
-          width: w + 'px',
-          height: h + 'px'
-        });
 
-        var clip = 'rect(' + top + 'px, ' + ( left + w ) + 'px, ' +  (top + h) + 'px, ' + left + 'px)';
-        imgElement.css({
-        	top: parseInt(-top) + 'px',
-        	left: parseInt(-left) + 'px',
-        	clip: clip
-        	
-        });
+        if(left + initialW + coef[2]*dx < imageW) { w = initialW + coef[2] * dx; }
+      	if(top + initialH + coef[3]*dy < imageH) { h = initialH + coef[3] * dy;}
+
+      	if( (left + w) < imageW && (top + h) < imageH && w > 5 && h >5){
+     			maskElement.css({
+	        	top:  top + 'px',
+	        	left: left + 'px',
+	        	width: w + 'px',
+	        	height: h + 'px'
+	      	});
+
+	      	var clip = 'rect(' + top + 'px, ' + ( left + w ) + 'px, ' +  (top + h) + 'px, ' + left + 'px)';
+	      	imgElement.css({
+	      		top: parseInt(-top) + 'px',
+	      		left: parseInt(-left) + 'px',
+	      		clip: clip
+	      	
+	      	}); 	
+      }
 
 
         return false;
@@ -92,7 +98,7 @@ angular.module('myApp')
       function mouseup($event){
       	initialW = w;
       	initialH = h;
-
+      	console.log('Top: ' + top + ' Left: ' + left + ' Width: ' + w + ' Height : ' + h);
       	$document.unbind('mousemove', mousemove);
         $document.unbind('mouseup', mouseup);
       };
@@ -106,7 +112,7 @@ angular.module('myApp')
 		return {
 			restrict: 'E',
 			scope: {},
-			template: '<div class="annotation-container"><img class="img-original" src="img/brusli.jpeg"></div>',
+			template: '<div class="annotation-container"><img class="img-original" ng-src="img/brusli.jpeg"></div>',
 			controller: function($scope){
 				
 			
